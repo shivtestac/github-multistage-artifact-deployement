@@ -1,0 +1,39 @@
+name: Create, Save, and Display File
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to the main branch
+
+jobs:
+  create_file:
+    runs-on: ubuntu-latest  # The environment to run the job on
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3  # Checkout the repository contents
+
+    - name: Create a sample file and add data
+      run: |
+        echo "This is a sample file." > file4.txt  # Create file4.txt and add data
+        echo "GitHub Actions is fun!" >> file4.txt  # Append some more data
+
+    - name: Save the file as an artifact
+      uses: actions/upload-artifact@v3  # Upload the artifact
+      with:
+        name: sample-file  # Name of the artifact
+        path: file4.txt     # Path to the file being uploaded
+
+  display_file:
+    runs-on: ubuntu-latest  # The environment to run the job on
+    needs: create_file      # This job will run after 'create_file' job
+
+    steps:
+    - name: Download the artifact
+      uses: actions/download-artifact@v3  # Download the artifact from the previous job
+      with:
+        name: sample-file  # Name of the artifact to download
+
+    - name: Display file content
+      run: |
+        cat file4.txt  # Display the content of the downloaded file
